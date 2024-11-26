@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Moda Pixel</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --background-color: #f5f6fa;
+            --card-background: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            padding: 1rem 2rem;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .info-group {
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            color: var(--text-color);
+            margin-top: 0.25rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background-color: var(--background-color);
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-top: 0.5rem;
+        }
+
+        .welcome-message {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .welcome-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .welcome-message {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="#" class="navbar-brand">Moda Pixel</a>
+            <div class="user-nav">
+                <span id="userName">Cargando...</span>
+                <button onclick="logout()" class="logout-btn">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-message">
+            <h1 class="welcome-title">Bienvenido/a, <span id="welcomeName">Usuario</span></h1>
+            <p class="welcome-subtitle">Dashboard de Cliente</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2 class="card-title">Información Personal</h2>
+                <div class="info-group">
+                    <div class="info-label">Nombre Completo</div>
+                    <div class="info-value" id="fullName">Cargando...</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Correo Electrónico</div>
+                    <div class="info-value" id="userEmail">Cargando...</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Teléfono</div>
+                    <div class="info-value" id="userPhone">Cargando...</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Fecha de Nacimiento</div>
+                    <div class="info-value" id="userBirthdate">Cargando...</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Sexo</div>
+                    <div class="info-value" id="userGender">Cargando...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Estado de Cuenta</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalOrders">0</div>
+                        <div class="stat-label">Pedidos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="lastVisit">-</div>
+                        <div class="stat-label">Última Visita</div>
+                    </div>
+                </div>
+                <div class="info-group" style="margin-top: 1rem;">
+                    <div class="info-label">ID de Cliente</div>
+                    <div class="info-value" id="clientId">Cargando...</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Fecha de Registro</div>
+                    <div class="info-value" id="registerDate">Cargando...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Actividad Reciente</h2>
+                <div id="recentActivity">
+                    <div class="info-group">
+                        <div class="info-label">Estado de Cuenta</div>
+                        <div class="info-value">Activo</div>
+                    </div>
+                    <div class="info-group">
+                        <div class="info-label">Último Acceso</div>
+                        <div class="info-value" id="lastAccess">Hoy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para formatear la fecha
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('es-ES', options);
+        }
+
+        // Función para traducir el género
+        function translateGender(gender) {
+            const translations = {
+                'M': 'Masculino',
+                'F': 'Femenino',
+                'Otro': 'Otro'
+            };
+            return translations[gender] || gender;
+        }
+
+        // Verificar si el usuario está autenticado
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Llenar datos del usuario
+            document.getElementById('userName').textContent = user.nombre;
+            document.getElementById('welcomeName').textContent = user.nombre;
+            document.getElementById('fullName').textContent = user.nombre;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userPhone').textContent = user.phone || 'No especificado';
+            document.getElementById('userBirthdate').textContent = user.birthdate ? formatDate(user.birthdate) : 'No especificado';
+            document.getElementById('userGender').textContent = translateGender(user.gender) || 'No especificado';
+            document.getElementById('clientId').textContent = `Local: ${user.local_id} | Pipedrive: ${user.pipedrive_id}`;
+            document.getElementById('registerDate').textContent = formatDate(user.fecha_registro) || 'No disponible';
+            
+            // Establecer la fecha de último acceso
+            document.getElementById('lastAccess').textContent = new Date().toLocaleString('es-ES');
+        });
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
