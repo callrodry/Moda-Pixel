@@ -2,8 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Productos - Moda Pixel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moda Pixel - Productos</title>
     <style>
+        /* Estilos generales */
         * {
             margin: 0;
             padding: 0;
@@ -11,186 +13,117 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
             line-height: 1.6;
-            background-color: #f8f9fa;
+            color: #333;
         }
 
+        /* Navbar */
         .navbar {
-            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: white;
+            padding: 1rem 2rem;
+            background-color: #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .brand {
             font-size: 1.5rem;
             font-weight: bold;
-            text-decoration: none;
             color: #000;
+            text-decoration: none;
         }
 
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 1.5rem;
             align-items: center;
         }
 
         .nav-link {
+            color: #333;
             text-decoration: none;
-            color: #666;
-            transition: color 0.3s ease;
-        }
-
-        .nav-link:hover {
-            color: #000;
+            font-weight: 500;
         }
 
         .nav-link.button {
-            background: #000;
-            color: white;
+            background-color: #000;
+            color: #fff;
             padding: 0.5rem 1rem;
             border-radius: 4px;
-            transition: background-color 0.3s ease;
         }
 
-        .nav-link.button:hover {
-            background: #333;
-        }
-
+        /* Container y grid */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
 
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
+        .section {
+            margin-bottom: 3rem;
         }
 
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Tarjetas de producto */
         .product-card {
-            background: white;
+            border: 1px solid #eee;
             border-radius: 8px;
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            background-color: #fff;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .product-image-container {
-            position: relative;
-            width: 100%;
-            padding-top: 100%; /* Aspecto cuadrado 1:1 */
-            overflow: hidden;
-            background-color: #f8f9fa;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .product-image {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
+            height: 250px;
             object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .product-card:hover .product-image {
-            transform: scale(1.05);
+            background-color: #f5f5f5;
         }
 
         .product-info {
-            padding: 1.5rem;
+            padding: 1rem;
         }
 
-        .product-title {
+        .product-name {
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: #000;
         }
 
         .product-description {
             color: #666;
             font-size: 0.9rem;
-            margin-bottom: 1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            margin-bottom: 0.5rem;
+            min-height: 2.7rem;
         }
 
         .product-price {
             font-size: 1.2rem;
             font-weight: bold;
             color: #000;
-            margin-bottom: 1rem;
         }
 
-        .buy-button {
-            display: block;
-            width: 100%;
-            padding: 0.8rem;
-            background: #000;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-weight: 500;
-        }
-
-        .buy-button:hover {
-            background: #333;
-        }
-
-        .recommended {
-            margin-top: 4rem;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            color: #000;
-            position: relative;
-            padding-bottom: 0.5rem;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background-color: #000;
-        }
-
-        @media (max-width: 768px) {
-            .product-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            }
-
-            .nav-links {
-                gap: 1rem;
-            }
-        }
-
+        /* Estados de carga y error */
         .loading {
             text-align: center;
             padding: 2rem;
-            font-size: 1.2rem;
             color: #666;
         }
 
@@ -199,8 +132,69 @@
             color: #c00;
             padding: 1rem;
             border-radius: 4px;
-            margin: 1rem 0;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        /* Imagen no disponible */
+        .no-image {
+            width: 100%;
+            height: 250px;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.9rem;
             text-align: center;
+            padding: 1rem;
+        }
+
+        /* Botón de reintentar */
+        .retry-button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .retry-button:hover {
+            background-color: #333;
+        }
+
+        /* Spinner de carga */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
@@ -216,94 +210,182 @@
     </nav>
 
     <div class="container">
-        <div id="error-container"></div>
-        <div id="products-container" class="product-grid">
-            <div class="loading">Cargando productos...</div>
+        <div id="error-container" class="error-message">
+            <span id="error-text"></span>
+            <button class="retry-button" onclick="loadProducts()" style="display: none;">Reintentar</button>
         </div>
 
-        <div class="recommended">
-            <h2 class="section-title">Recomendado</h2>
+        <div id="recommended" class="section">
+            <h2 class="section-title">Recomendados</h2>
             <div id="recommended-products" class="product-grid">
-                <div class="loading">Cargando recomendaciones...</div>
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    Cargando recomendaciones...
+                </div>
+            </div>
+        </div>
+
+        <div id="all-products" class="section">
+            <h2 class="section-title">Todos los Productos</h2>
+            <div id="products-container" class="product-grid">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    Cargando productos...
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        function formatPrice(price) {
-            return new Intl.NumberFormat('es-MX', {
-                style: 'currency',
-                currency: 'MXN'
-            }).format(price);
+        // Variables globales
+let isLoading = false;
+
+// Función para crear tarjeta de producto
+function createProductCard(product) {
+    try {
+        if (!product || typeof product !== 'object') {
+            console.error('Producto inválido:', product);
+            return null;
         }
 
-        function createProductCard(product) {
-            return `
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="${product.image_url || 'https://via.placeholder.com/400'}" 
-                             alt="${product.name}"
-                             class="product-image"
-                             onerror="this.src='https://via.placeholder.com/400?text=Imagen+no+disponible'">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <p class="product-description">${product.description}</p>
-                        <p class="product-price">${formatPrice(product.price)}</p>
-                        <button class="buy-button" onclick="handlePurchase(${product.id})">Comprar</button>
-                    </div>
+        const card = document.createElement('div');
+        card.className = 'product-card';
+
+        // Sanitizar los valores del producto
+        const name = (product.name || 'Producto sin nombre').replace(/['"<>]/g, '');
+        const description = (product.description || 'Sin descripción').replace(/['"<>]/g, '');
+        const price = parseFloat(product.price || 0).toFixed(2);
+        const imageUrl = product.image_url || '';
+
+        card.innerHTML = `
+            ${imageUrl ? `
+                <div class="product-image-container">
+                    <img src="${imageUrl}" 
+                         alt="${name}" 
+                         class="product-image" 
+                         onerror="this.parentElement.innerHTML='<div class=\\'no-image\\'>Imagen no disponible</div>';">
                 </div>
-            `;
+            ` : '<div class="no-image">Imagen no disponible</div>'}
+            <div class="product-info">
+                <h3 class="product-name">${name}</h3>
+                <p class="product-description">${description}</p>
+                <p class="product-price">$${price}</p>
+            </div>
+        `;
+
+        return card;
+
+    } catch (error) {
+        console.error('Error al crear tarjeta de producto:', error);
+        return null;
+    }
+}
+
+// Función para mostrar errores
+function showError(message, showRetry = true) {
+    const errorContainer = document.getElementById('error-container');
+    const errorText = document.getElementById('error-text');
+    const retryButton = errorContainer.querySelector('.retry-button');
+    
+    if (errorContainer && errorText) {
+        errorText.textContent = message;
+        errorContainer.style.display = 'block';
+        if (retryButton) {
+            retryButton.style.display = showRetry ? 'block' : 'none';
+        }
+    }
+}
+
+// Función para ocultar errores
+function hideError() {
+    const errorContainer = document.getElementById('error-container');
+    if (errorContainer) {
+        errorContainer.style.display = 'none';
+    }
+}
+
+// Función principal para cargar productos
+async function loadProducts() {
+    if (isLoading) return;
+    
+    isLoading = true;
+    hideError();
+
+    const recommendedContainer = document.getElementById('recommended-products');
+    const productsContainer = document.getElementById('products-container');
+    
+    // Mostrar estado de carga
+    if (recommendedContainer) {
+        recommendedContainer.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Cargando recomendaciones...</div>';
+    }
+    if (productsContainer) {
+        productsContainer.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Cargando productos...</div>';
+    }
+
+    try {
+        console.log('Iniciando carga de productos...');
+        const response = await fetch('get_products.php');
+        console.log('Estado de la respuesta:', response.status);
+
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.status}`);
         }
 
-        async function fetchProducts() {
-            try {
-                const response = await fetch('get_products.php');
-                if (!response.ok) {
-                    throw new Error('Error al cargar los productos');
-                }
-                const data = await response.json();
-                
-                if (data.success) {
-                    renderProducts(data.products);
-                    renderRecommendedProducts(data.recommended);
-                } else {
-                    throw new Error(data.message || 'Error al cargar los productos');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('error-container').innerHTML = `
-                    <div class="error-message">${error.message}</div>
-                `;
+        const text = await response.text();
+        console.log('Respuesta recibida:', text);
+        
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error('Error al parsear JSON:', e);
+            throw new Error('Error al procesar la respuesta del servidor');
+        }
+
+        if (!data.success) {
+            throw new Error(data.message || 'Error al cargar los productos');
+        }
+
+        // Procesar productos recomendados
+        if (recommendedContainer) {
+            recommendedContainer.innerHTML = '';
+            if (Array.isArray(data.recommended) && data.recommended.length > 0) {
+                data.recommended.forEach(product => {
+                    const card = createProductCard(product);
+                    if (card) {
+                        recommendedContainer.appendChild(card);
+                    }
+                });
+            } else {
+                recommendedContainer.innerHTML = '<p class="loading">No hay productos recomendados disponibles</p>';
             }
         }
 
-        function renderProducts(products) {
-            const container = document.getElementById('products-container');
-            if (products.length === 0) {
-                container.innerHTML = '<div class="error-message">No hay productos disponibles</div>';
-                return;
+        // Procesar todos los productos
+        if (productsContainer) {
+            productsContainer.innerHTML = '';
+            if (Array.isArray(data.products) && data.products.length > 0) {
+                data.products.forEach(product => {
+                    const card = createProductCard(product);
+                    if (card) {
+                        productsContainer.appendChild(card);
+                    }
+                });
+            } else {
+                productsContainer.innerHTML = '<p class="loading">No hay productos disponibles</p>';
             }
-            container.innerHTML = products.map(createProductCard).join('');
         }
 
-        function renderRecommendedProducts(products) {
-            const container = document.getElementById('recommended-products');
-            if (products.length === 0) {
-                container.innerHTML = '<div class="error-message">No hay recomendaciones disponibles</div>';
-                return;
-            }
-            container.innerHTML = products.map(createProductCard).join('');
-        }
+    } catch (error) {
+        console.error('Error:', error);
+        showError(`Error al cargar los productos: ${error.message}`);
+    } finally {
+        isLoading = false;
+    }
+}
 
-        function handlePurchase(productId) {
-            // Aquí puedes implementar la lógica de compra
-            console.log('Comprando producto:', productId);
-            alert('Función de compra en desarrollo');
-        }
-
-        // Cargar productos al iniciar la página
-        document.addEventListener('DOMContentLoaded', fetchProducts);
+// Iniciar carga de productos cuando el documento esté listo
+document.addEventListener('DOMContentLoaded', loadProducts);
     </script>
 </body>
 </html>
