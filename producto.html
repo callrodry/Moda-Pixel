@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Producto - Moda Pixel</title>
+    <script src="cart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-link.button {
+            background-color: #000;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .product-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .product-image {
+            flex: 0 0 50%;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-title {
+            font-size: 2em;
+            margin-bottom: 1rem;
+            color: #000;
+        }
+
+        .product-code {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 1rem;
+            background-color: #f5f5f5;
+            padding: 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .product-price {
+            font-size: 1.8em;
+            color: #000;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+
+        .product-description {
+            color: #666;
+            margin: 1rem 0;
+            line-height: 1.8;
+        }
+
+        .product-stock {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #000;
+            color: #fff;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        .buy-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: #000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 1rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        .buy-button:hover {
+            background-color: #333;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #666;
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+
+        .error-message {
+            background-color: #fee;
+            color: #c00;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .product-container {
+                flex-direction: column;
+            }
+
+            .product-image {
+                flex: 0 0 100%;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="brand">Moda Pixel</a>
+        <div class="nav-links">
+            <a href="#" class="nav-link">Buscar en tienda</a>
+            <a href="#" class="nav-link">Ayuda</a>
+            <a href="login.html" class="nav-link">Iniciar sesión</a>
+            <a href="#" class="nav-link button">Comprar</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="products.html" class="back-link">← Volver a productos</a>
+        <div id="error-message" class="error-message"></div>
+        <div id="product-content">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                Cargando producto...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Obtener el ID del producto de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        // Función para mostrar errores
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // Función para cargar el producto
+        async function loadProduct() {
+            const contentContainer = document.getElementById('product-content');
+
+            try {
+                if (!productId) {
+                    throw new Error('ID de producto no especificado');
+                }
+
+                const response = await fetch(`get_product.php?id=${productId}`);
+                if (!response.ok) {
+                    throw new Error('Error al obtener el producto');
+                }
+
+                const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.message || 'Error al cargar el producto');
+                }
+
+                const product = data.product;
+                
+                contentContainer.innerHTML = `
+                    <div class="product-container">
+                        <div class="product-image">
+                            <img src="${product.image_url}" alt="${product.name}" 
+                                onerror="this.src='/moda/assets/placeholder.jpg'">
+                        </div>
+                        <div class="product-details">
+                            <h1 class="product-title">${product.name}</h1>
+                            <div class="product-code">Código: ${product.code}</div>
+                            <div class="product-price">$${product.price}</div>
+                            <p class="product-description">${product.description}</p>
+                            <div class="product-stock">${product.stock} unidades disponibles</div>
+                            <button class="buy-button" onclick="addToCart()">Agregar al carrito</button>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message);
+                contentContainer.innerHTML = '';
+            }
+        }
+
+        function addToCart() {
+            alert('Producto agregado al carrito');
+        }
+
+        // Cargar el producto cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', loadProduct);
+
+        // En la función addToCart de producto.html
+        function addToCart() {
+            const product = {
+                id: productId, // El ID del producto actual
+                name: document.getElementById('product-title').textContent,
+                price: document.getElementById('product-price').textContent.replace('$', ''),
+                image_url: document.querySelector('.product-image img').src,
+            };
+            
+            Cart.addToCart(product);
+            alert('Producto agregado al carrito');
+        }
+    </script>
+</body>
+</html>

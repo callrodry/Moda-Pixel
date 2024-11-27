@@ -12,7 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Configuración
 define('DOLIBARR_API_URL', 'https://modapiexl.saas2.doliondemand.fr/api/index.php');
 define('DOLIBARR_API_KEY', 'fYGSn7ND5w215yfs6Z51p7mKh1UKfUuG');
-define('DEBUG_MODE', true); // Activar/desactivar modo debug
+define('ASSETS_DIR', __DIR__ . '/assets/');
+define('DEBUG_MODE', true);
+
+// Crear directorio de assets si no existe
+if (!file_exists(ASSETS_DIR)) {
+    mkdir(ASSETS_DIR, 0777, true);
+}
 
 function debug_log($message, $data = null) {
     if (DEBUG_MODE) {
@@ -21,6 +27,51 @@ function debug_log($message, $data = null) {
             $data !== null ? json_encode($data, JSON_UNESCAPED_UNICODE) : 'null'
         ));
     }
+}
+
+function downloadProductImage($productId) {
+    $productsDir = ASSETS_DIR . 'products/'; // Definimos la ruta de products aquí
+    
+    // Crear directorio products si no existe
+    if (!file_exists($productsDir)) {
+        mkdir($productsDir, 0777, true);
+    }
+
+    $localPath = $productsDir . $productId . '.jpg';
+    $webPath = 'assets/products/' . $productId . '.jpg';
+    
+    // Debug
+    error_log("Ruta de productos: " . $productsDir);
+    error_log("Ruta local de imagen: " . $localPath);
+    
+    // Si la imagen ya existe localmente, devolver la ruta web
+    if (file_exists($localPath)) {
+        return $webPath;
+    }
+
+    // URL de la imagen en Dolibarr
+    $imageUrl = DOLIBARR_API_URL . '/products/' . $productId . '/photo?DOLAPIKEY=' . DOLIBARR_API_KEY;
+
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $imageUrl,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => 0
+    ]);
+
+    $imageData = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode === 200 && !empty($imageData)) {
+        if (file_put_contents($localPath, $imageData)) {
+            return $webPath;
+        }
+    }
+
+    return 'assets/placeholder.jpg';
 }
 
 function makeApiRequest($endpoint) {
@@ -45,12 +96,6 @@ function makeApiRequest($endpoint) {
     $curlError = curl_errno($ch);
     $curlErrorMessage = curl_error($ch);
     
-    debug_log("Respuesta API", [
-        'httpCode' => $httpCode,
-        'curlError' => $curlError,
-        'curlErrorMessage' => $curlErrorMessage
-    ]);
-    
     if ($curlError) {
         curl_close($ch);
         throw new Exception("Error CURL: " . $curlErrorMessage);
@@ -64,7 +109,6 @@ function makeApiRequest($endpoint) {
     
     $decoded = json_decode($response, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
-        debug_log("Respuesta cruda", $response);
         throw new Exception("Error decodificando JSON: " . json_last_error_msg());
     }
     
@@ -74,23 +118,20 @@ function makeApiRequest($endpoint) {
 function processProduct($product) {
     debug_log("Procesando producto", $product);
     
-    // Validación básica
     if (!isset($product['id']) || !isset($product['label'])) {
         debug_log("Producto inválido - falta ID o label");
         return null;
     }
+
+    // Descargar y obtener la ruta de la imagen
+    $imagePath = downloadProductImage($product['id']);
     
     return [
         'id' => (int)$product['id'],
         'name' => strval($product['label'] ?? 'Producto sin nombre'),
         'description' => strval($product['description'] ?? 'Sin descripción'),
         'price' => number_format(floatval($product['price'] ?? 0), 2, '.', ''),
-        'image_url' => sprintf(
-            '%s/products/%d/photo?DOLAPIKEY=%s',
-            DOLIBARR_API_URL,
-            $product['id'],
-            DOLIBARR_API_KEY
-        ),
+        'image_url' => $imagePath,
         'code' => strval($product['ref'] ?? ''),
         'category' => strval($product['category'] ?? 'Ropa'),
         'stock' => (int)($product['stock_reel'] ?? 0)
@@ -126,7 +167,7 @@ try {
     
     $response = [
         'success' => true,
-        'products' => array_values($processedProducts), // Reindexar array
+        'products' => array_values($processedProducts),
         'recommended' => $recommended,
         'debug' => DEBUG_MODE ? [
             'total_products' => count($products),

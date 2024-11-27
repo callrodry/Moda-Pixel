@@ -83,6 +83,10 @@
             overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s;
             background-color: #fff;
+            cursor: pointer;
+            display: block; /* Ya que ahora es un elemento <a> */
+            text-decoration: none;
+            color: inherit;
         }
 
         .product-card:hover {
@@ -241,6 +245,7 @@
 let isLoading = false;
 
 // Función para crear tarjeta de producto
+// Modificar la función createProductCard
 function createProductCard(product) {
     try {
         if (!product || typeof product !== 'object') {
@@ -248,8 +253,11 @@ function createProductCard(product) {
             return null;
         }
 
-        const card = document.createElement('div');
+        // Crear un elemento 'a' en lugar de div para hacer toda la tarjeta clickeable
+        const card = document.createElement('a');
         card.className = 'product-card';
+        card.href = `producto.html?id=${product.id}`; // Agregar el enlace
+        card.style.textDecoration = 'none'; // Mantener el estilo limpio
 
         // Sanitizar los valores del producto
         const name = (product.name || 'Producto sin nombre').replace(/['"<>]/g, '');
@@ -257,15 +265,18 @@ function createProductCard(product) {
         const price = parseFloat(product.price || 0).toFixed(2);
         const imageUrl = product.image_url || '';
 
+        // Mejorar el manejo de imágenes con logging y fallback
+        const imageHtml = imageUrl ? `
+            <div class="product-image-container">
+                <img src="${imageUrl}" 
+                     alt="${name}" 
+                     class="product-image" 
+                     onerror="this.src='assets/placeholder.jpg'; console.log('Error cargando imagen:', '${imageUrl}');">
+            </div>
+        ` : '<div class="no-image">Imagen no disponible</div>';
+
         card.innerHTML = `
-            ${imageUrl ? `
-                <div class="product-image-container">
-                    <img src="${imageUrl}" 
-                         alt="${name}" 
-                         class="product-image" 
-                         onerror="this.parentElement.innerHTML='<div class=\\'no-image\\'>Imagen no disponible</div>';">
-                </div>
-            ` : '<div class="no-image">Imagen no disponible</div>'}
+            ${imageHtml}
             <div class="product-info">
                 <h3 class="product-name">${name}</h3>
                 <p class="product-description">${description}</p>
@@ -274,7 +285,6 @@ function createProductCard(product) {
         `;
 
         return card;
-
     } catch (error) {
         console.error('Error al crear tarjeta de producto:', error);
         return null;

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito - Moda Pixel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .cart-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cart-empty {
+            text-align: center;
+            padding: 3rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .cart-items {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 1rem;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-price {
+            color: #666;
+        }
+
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .quantity-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .quantity-input {
+            width: 50px;
+            padding: 0.25rem;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+
+        .cart-summary {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 1rem;
+        }
+
+        .cart-total {
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+
+        .checkout-btn {
+            display: block;
+            width: 100%;
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        .continue-shopping {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .continue-shopping:hover {
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .cart-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .item-image {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+
+            .remove-btn {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="products.html" class="brand">Moda Pixel</a>
+    </nav>
+
+    <div class="container">
+        <h1 class="cart-title">Carrito de Compras</h1>
+        <div id="cart-content">
+            <!-- El contenido del carrito se cargará aquí -->
+        </div>
+    </div>
+
+    <script src="cart.js"></script>
+    <script>
+        function renderCart() {
+            const cartContent = document.getElementById('cart-content');
+            const cart = Cart.getCart();
+
+            if (cart.length === 0) {
+                cartContent.innerHTML = `
+                    <div class="cart-empty">
+                        <h2>Tu carrito está vacío</h2>
+                        <a href="products.html" class="continue-shopping">Continuar comprando</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let cartHTML = '<div class="cart-items">';
+            cart.forEach(item => {
+                cartHTML += `
+                    <div class="cart-item" data-id="${item.id}">
+                        <img src="${item.image_url}" alt="${item.name}" class="item-image">
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">$${item.price}</div>
+                            <div class="item-quantity">
+                                <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                                <input type="number" class="quantity-input" value="${item.quantity}" 
+                                       onchange="updateQuantity(${item.id}, this.value)">
+                                <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                            </div>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">Eliminar</button>
+                    </div>
+                `;
+            });
+            cartHTML += '</div>';
+
+            cartHTML += `
+                <div class="cart-summary">
+                    <div class="cart-total">Total: $${Cart.getTotal().toFixed(2)}</div>
+                    <button class="checkout-btn" onclick="checkout()">Proceder al pago</button>
+                    <a href="products.html" class="continue-shopping">Continuar comprando</a>
+                </div>
+            `;
+
+            cartContent.innerHTML = cartHTML;
+        }
+
+        function updateQuantity(productId, quantity) {
+            Cart.updateQuantity(productId, quantity);
+            renderCart();
+        }
+
+        function removeFromCart(productId) {
+            Cart.removeFromCart(productId);
+            renderCart();
+        }
+
+        function checkout() {
+            alert('¡Gracias por tu compra!');
+            Cart.clearCart();
+            renderCart();
+        }
+
+        // Renderizar el carrito cuando se carga la página
+        document.addEventListener('DOMContentLoaded', renderCart);
+    </script>
+</body>
+</html>
