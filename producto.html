@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle de Producto - Moda Pixel</title>
-    <script src="cart.js"></script>
     <style>
+        /* Mantener todos los estilos existentes */
         * {
             margin: 0;
             padding: 0;
@@ -183,6 +183,27 @@
             100% { transform: rotate(360deg); }
         }
 
+        .cart-count {
+            background-color: #000;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 50%;
+            font-size: 0.8em;
+            margin-left: 4px;
+            display: none;
+        }
+
+        .alert-success {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #000;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 4px;
+            z-index: 1000;
+        }
+
         @media (max-width: 768px) {
             .product-container {
                 flex-direction: column;
@@ -200,11 +221,14 @@
 </head>
 <body>
     <nav class="navbar">
-        <a href="#" class="brand">Moda Pixel</a>
+        <a href="products.html" class="brand">Moda Pixel</a>
         <div class="nav-links">
             <a href="#" class="nav-link">Buscar en tienda</a>
             <a href="#" class="nav-link">Ayuda</a>
             <a href="login.html" class="nav-link">Iniciar sesión</a>
+            <a href="cart.html" class="nav-link">
+                Carrito <span id="cart-count" class="cart-count">0</span>
+            </a>
             <a href="#" class="nav-link button">Comprar</a>
         </div>
     </nav>
@@ -220,10 +244,15 @@
         </div>
     </div>
 
+    <script src="cart.js"></script>
     <script>
         // Obtener el ID del producto de la URL
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
+
+        if (!productId) {
+            window.location.href = 'products.html';
+        }
 
         // Función para mostrar errores
         function showError(message) {
@@ -231,7 +260,7 @@
             errorElement.textContent = message;
             errorElement.style.display = 'block';
         }
-
+        
         // Función para cargar el producto
         async function loadProduct() {
             const contentContainer = document.getElementById('product-content');
@@ -257,13 +286,13 @@
                     <div class="product-container">
                         <div class="product-image">
                             <img src="${product.image_url}" alt="${product.name}" 
-                                onerror="this.src='/moda/assets/placeholder.jpg'">
+                                onerror="this.src='assets/placeholder.jpg'">
                         </div>
                         <div class="product-details">
-                            <h1 class="product-title">${product.name}</h1>
+                            <h1 class="product-title" id="product-title">${product.name}</h1>
                             <div class="product-code">Código: ${product.code}</div>
-                            <div class="product-price">$${product.price}</div>
-                            <p class="product-description">${product.description}</p>
+                            <div class="product-price" id="product-price">$${product.price}</div>
+                            <p class="product-description" id="product-description">${product.description}</p>
                             <div class="product-stock">${product.stock} unidades disponibles</div>
                             <button class="buy-button" onclick="addToCart()">Agregar al carrito</button>
                         </div>
@@ -277,25 +306,31 @@
             }
         }
 
+        // Nueva versión simplificada de addToCart
         function addToCart() {
-            alert('Producto agregado al carrito');
-        }
+            try {
+                if (typeof Cart === 'undefined') {
+                    throw new Error('El sistema de carrito no está disponible');
+                }
 
+                const productData = {
+                    id: parseInt(productId),
+                    name: document.querySelector('.product-title').textContent,
+                    price: document.querySelector('.product-price').textContent.replace('$', '').trim(),
+                    description: document.querySelector('.product-description').textContent,
+                    image_url: document.querySelector('.product-image img').src,
+                    stock: parseInt(document.querySelector('.product-stock').textContent.match(/\d+/)[0])
+                };
+
+                Cart.addToCart(productData);
+
+            } catch (error) {
+                console.error('Error al agregar al carrito:', error);
+                showError('Error al agregar el producto al carrito: ' + error.message);
+            }
+        }
         // Cargar el producto cuando la página esté lista
         document.addEventListener('DOMContentLoaded', loadProduct);
-
-        // En la función addToCart de producto.html
-        function addToCart() {
-            const product = {
-                id: productId, // El ID del producto actual
-                name: document.getElementById('product-title').textContent,
-                price: document.getElementById('product-price').textContent.replace('$', ''),
-                image_url: document.querySelector('.product-image img').src,
-            };
-            
-            Cart.addToCart(product);
-            alert('Producto agregado al carrito');
-        }
     </script>
 </body>
 </html>
